@@ -1,7 +1,51 @@
 #module: floatlist.py
+"""
+Decorates Python's standard list with the ability to index into it at 
+floating point indices, with the option to interpret those floating point
+indices as to be interpolated between surrounding values or as floored values.
 
+Wraps infinitely as well.
+"""
 from math import floor, ceil
 
+def flr(x):
+	"""
+	Floors a value to the greatest integer value lower than the
+	given value. This is mainly to avoid ugly typecasting in-line.
+	
+	Parameters:
+		x (Float): The value to floor.
+	
+	Returns:
+		The first integer below this floating point value.
+		
+	Preconditions:
+		None.
+		
+	Postconditions:
+		None.
+	"""
+	return int(floor(x))
+	
+def cl(x):
+	"""
+	Returns the lowest integer value above the given value. This
+	function exists to avoid typecasting inline.
+	
+	Parameters:
+		x (Float): The value to ceil.
+	
+	Returns:
+		The first integer above this floating point value.
+		
+	Preconditions:
+		None.
+		
+	Postconditions:
+		None.
+	"""
+	return int(ceil(x))
+	
 def _lerp(a, b, t):
 	"""
 	Linearly interpolates between A and B fractional distance t.
@@ -73,29 +117,9 @@ class FloatList(list):
 	
 	__slots__= ("lerp")
 	
-	def __init__(self, interpolate=True):
-		"""
-		Initializes the FloatList.
-		
-		Parameters:
-			-interpolate (Boolean): Whether or not to interpolate on access
-			and update. (Default: True)
-			
-		Returns:
-			None.
-			
-		Preconditions:
-			None.
-			
-		Postconditions:
-			None.
-		"""
-		super().__init__(self)
-		self.lerp = interpolate
-			
 	def __init__(self, list, interpolate=True):
 		"""
-		Optional constructor which accepts a pre-existing list type as initial
+		Constructor which accepts a pre-existing list type as initial
 		data.
 		
 		Parameters:
@@ -113,7 +137,7 @@ class FloatList(list):
 		Postconditions:
 			None.
 		"""
-		super().__init__(self)
+		super(FloatList, self).__init__(self)
 		self.lerp = interpolate
 		for i in list:
 			self.append(i)
@@ -138,7 +162,7 @@ class FloatList(list):
 		Postconditions:
 			None.
 		"""
-		return super().__len__()
+		return super(FloatList, self).__len__()
 		
 	def __getitem__(self, key):
 		"""
@@ -165,9 +189,9 @@ class FloatList(list):
 				return self.__get_slice(key)
 			else:
 				return self.__get_single(key)
-		except TypeError:
+		except TypeError as error:
 			print("Could not retrieve key="+str(key)+". Key not integer, "+\
-			"float, or slice.")
+			"float, or slice."+str(error))
 		
 	def __get_slice(self, s):
 		"""
@@ -211,12 +235,12 @@ class FloatList(list):
 			on either integer side of the specified index.
 		"""
 		
-		k %= super().__len__()
+		k %= super(FloatList, self).__len__()
 		if self.lerp:
-			return _lerp( super().__getitem__(floor(k)),	\
-						super().__getitem__(ceil(k)%super().__len__()),	\
-						k-floor(k) )
-		return super().__getitem__(floor(k))
+			return _lerp( super(FloatList, self).__getitem__(flr(k)),\
+						super(FloatList, self).__getitem__(cl(k)%	\
+						super(FloatList, self).__len__()),	k-flr(k))
+		return super(FloatList, self).__getitem__(flr(k))
 		
 	def __setitem__(self, key, value):
 		"""
@@ -285,16 +309,17 @@ class FloatList(list):
 		
 		
 		"""
-		k %= super().__len__()
+		k %= super(FloatList, self).__len__()
 		if self.lerp:
-			super().__setitem__(floor(k), _lerp(v, 
-										super().__getitem__(floor(k)), 
-										k-floor(k)) )
-			super().__setitem__(ceil(k), _lerp( super().__getitem__(ceil(k)), 
-										v, 
-										k-floor(k)) )
+			super(FloatList, self).__setitem__(floor(k), _lerp(v, \
+								super(FloatList, self).__getitem__(flr(k)), \
+								k-flr(k)) )
+			super(FloatList, self).__setitem__(ceil(k),	\
+							_lerp( super(FloatList, self).__getitem__(cl(k)), 
+							v, 
+							k-flr(k)) )
 		else:
-			super().__setitem__(floor(k), v)
+			super(FloatList, self).__setitem__(flr(k), v)
 										
 	def __contains__(self, item):
 		"""
@@ -313,9 +338,9 @@ class FloatList(list):
 			None.
 		"""
 		if self.lerp:
-			for i in range(super().__len__()-1):
-				if super().__getitem__(i) <= item and 	\
-					super().__getitem__(i+1) >= item:
+			for i in range(super(FloatList, self).__len__()-1):
+				if super(FloatList, self).__getitem__(i) <= item and 	\
+					super(FloatList, self).__getitem__(i+1) >= item:
 					return True
 		else:
 			return super().__contains__(item)
@@ -339,5 +364,5 @@ class FloatList(list):
 		"""
 		l = []
 		for i in self:
-			l.append[i]
+			l.append(i)
 		return l
