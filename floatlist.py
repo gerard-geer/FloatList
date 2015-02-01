@@ -113,7 +113,7 @@ class FloatList(list):
 		Postconditions:
 			None.
 		"""
-		super().__init__(self)
+		super(FloatList, self).__init__(self)
 		self.lerp = interpolate
 		for i in list:
 			self.append(i)
@@ -138,7 +138,7 @@ class FloatList(list):
 		Postconditions:
 			None.
 		"""
-		return super().__len__()
+		return super(FloatList, self).__len__()
 		
 	def __getitem__(self, key):
 		"""
@@ -211,12 +211,13 @@ class FloatList(list):
 			on either integer side of the specified index.
 		"""
 		
-		k %= super().__len__()
+		k %= super(FloatList, self).__len__()
 		if self.lerp:
-			return _lerp( super().__getitem__(floor(k)),	\
-						super().__getitem__(ceil(k)%super().__len__()),	\
+			return _lerp( super(FloatList, self).__getitem__(floor(k)),	\
+						super(FloatList, self).__getitem__(ceil(k)%	\
+						super(FloatList, self).__len__()),	\
 						k-floor(k) )
-		return super().__getitem__(floor(k))
+		return super(FloatList, self).__getitem__(floor(k))
 		
 	def __setitem__(self, key, value):
 		"""
@@ -285,16 +286,16 @@ class FloatList(list):
 		
 		
 		"""
-		k %= super().__len__()
+		k %= super(FloatList, self).__len__()
 		if self.lerp:
-			super().__setitem__(floor(k), _lerp(v, 
-										super().__getitem__(floor(k)), 
+			super(FloatList, self).__setitem__(floor(k), _lerp(v, 
+										super(FloatList, self).__getitem__(floor(k)), 
 										k-floor(k)) )
-			super().__setitem__(ceil(k), _lerp( super().__getitem__(ceil(k)), 
+			super(FloatList, self).__setitem__(ceil(k), _lerp( super(FloatList, self).__getitem__(ceil(k)), 
 										v, 
 										k-floor(k)) )
 		else:
-			super().__setitem__(floor(k), v)
+			super(FloatList, self).__setitem__(floor(k), v)
 										
 	def __contains__(self, item):
 		"""
@@ -313,12 +314,12 @@ class FloatList(list):
 			None.
 		"""
 		if self.lerp:
-			for i in range(super().__len__()-1):
-				if super().__getitem__(i) <= item and 	\
-					super().__getitem__(i+1) >= item:
+			for i in range(super(FloatList, self).__len__()-1):
+				if super(FloatList, self).__getitem__(i) <= item and 	\
+					super(FloatList, self).__getitem__(i+1) >= item:
 					return True
 		else:
-			return super().__contains__(item)
+			return super(FloatList, self).__contains__(item)
 		return False
 		
 	def aslist(self):
